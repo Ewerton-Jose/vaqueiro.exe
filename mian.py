@@ -1,13 +1,5 @@
-import socket, requests, platform, os, ctypes, subprocess, cv2
+import platform, os, ctypes, subprocess, cv2, time, pyautogui
 
-# Pegar ip da máquina
-
-ip_local = socket.gethostbyname(socket.gethostname())
-ip_publico = requests.get('https://api.ipify.org/').text
-
-# Desabilitar o mausepad
-
-# Bloquear as entradas usb
 
 # Mudar wallpaper
 
@@ -19,8 +11,25 @@ image_path = os.path.join(caminho, nome_arquivo_imagem)
 SPI_SETDESKWALLPAPER = 20
 command = f"gsettings set org.gnome.desktop.background picture-uri 'file://{image_path}'"
 
-if (sistema_operacional.lower() == 'windows'): ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, image_path, 3)
-elif (sistema_operacional.lower() == 'linux'): subprocess.run(command, shell=True)
+if (sistema_operacional.lower() == 'windows'):
+    ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, image_path, 3)
+
+    pyautogui.FAILSAFE = False
+
+    while True:
+        pass
+    
+
+elif (sistema_operacional.lower() == 'linux'):
+    subprocess.run(command, shell=True)
+    # Desabilitar o mausepad e teclado (linux)
+
+    disable_keyboard_command = "xinput float $(xinput list | grep 'AT Translated Set 2 keyboard' | awk '{print $7}' | cut -d'=' -f2)"
+    disable_mouse_command = "xinput float $(xinput list | grep 'USB Optical Mouse' | awk '{print $7}' | cut -d'=' -f2)"
+
+    subprocess.run(disable_keyboard_command, shell=True)
+    subprocess.run(disable_mouse_command, shell=True)
+
 else: print(sistema_operacional)
 
 # Mostrar vídeo
@@ -58,3 +67,15 @@ cv2.destroyAllWindows()
 
 
 # Desligar PC
+
+
+tempo_para_desligar = 120
+
+# Aguardar o tempo especificado
+time.sleep(tempo_para_desligar)
+
+# Comando para desligar o computador
+comando_desligar = "sudo shutdown -h now"
+
+# Executar o comando para desligar o computador
+subprocess.run(comando_desligar, shell=True)
